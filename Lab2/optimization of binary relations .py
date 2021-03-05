@@ -270,7 +270,7 @@ def add_to_arr(arr1, arr2):
 
 def get_s_seq(relation):
 	omega = get_blockers_by_R_strict(relation)
-	a = get_blockers_by_R_strict(relation)
+	a = copy.deepcopy(omega)
 	om = []
 	om.append(a)
 	t = []
@@ -327,6 +327,43 @@ def NM_optimization(relation):
 
 
 #get matrix for symmetrical, asymmetric, incomparable part of the relation
+
+def test_get_Sk_matrix(PNImatrix, p, n, s): #s - symmetrical
+
+	sk = copy.deepcopy(PNImatrix)
+	# s1 1 1 1 
+	if p and n and s:
+		for i in range(len(PNImatrix)):
+			for j in range(len(PNImatrix)):
+				if PNImatrix[i][j] != 0:
+					sk[i][j] = 1
+	# s2 1 1 0
+	if p or n and s == 0:
+		for i in range(len(PNImatrix)):
+			for j in range(len(PNImatrix)):
+				if PNImatrix[i][j] == 'N' or PNImatrix[i][j] == 'P':
+					sk[i][j] = 1
+				if PNImatrix[i][j] == 'I':
+					sk[i][j] = 0
+	#s3 1 0 1
+	if p or s and n == 0:
+		for i in range(len(PNImatrix)):
+			for j in range(len(PNImatrix)):
+				if PNImatrix[i][j] == 'I' or PNImatrix[i][j] == 'P':
+					sk[i][j] = 1
+				if PNImatrix[i][j] == 'N':
+					sk[i][j] = 0
+	
+	#s4 1 0 0
+	if p and n == 0 and s == 0:
+		for i in range(len(PNImatrix)):
+			for j in range(len(PNImatrix)):
+				if PNImatrix[i][j] == 'P':
+					sk[i][j] = 1
+				if PNImatrix[i][j] == 'N' or PNImatrix[i][j] == 'I' :
+					sk[i][j] = 0 
+	return sk
+
 
 def get_PNImatrix(relation):
 	
@@ -392,14 +429,9 @@ def get_max1_str(s):
 #optimization by symmetrical, asymmetric, incomparable parts
 
 def k1_optimize(PNImatrix):
-	s1 = copy.deepcopy(PNImatrix)
+	s1 = test_get_Sk_matrix(PNImatrix, 1, 1, 1)
 	max1 = []
 	opt1 = []
-	for i in range(len(PNImatrix)):
-		for j in range(len(PNImatrix)):
-			if PNImatrix[i][j] != 0:
-				s1[i][j] = 1
-
 	print("****S1****")
 	show(s1)
 	candidates = get_max1_str(s1)
@@ -408,15 +440,8 @@ def k1_optimize(PNImatrix):
 #optimization by asymmetric, incomparable parts
 
 def k2_optimize(PNImatrix):
-	s2 = copy.deepcopy(PNImatrix)
-
-	for i in range(len(PNImatrix)):
-		for j in range(len(PNImatrix)):
-			if PNImatrix[i][j] == 'N' or PNImatrix[i][j] == 'P':
-				s2[i][j] = 1
-			if PNImatrix[i][j] == 'I':
-				s2[i][j] = 0
-
+	#s2 = copy.deepcopy(PNImatrix)
+	s2 = test_get_Sk_matrix(PNImatrix, 1, 1, 0)
 	print("****S2****")
 	show(s2)
 	candidates = get_max1_str(s2)
@@ -426,14 +451,8 @@ def k2_optimize(PNImatrix):
 #optimization by symmetrical, asymmetric parts
 
 def k3_optimize(PNImatrix):
-	s3 = copy.deepcopy(PNImatrix)
-	for i in range(len(PNImatrix)):
-		for j in range(len(PNImatrix)):
-			if PNImatrix[i][j] == 'I' or PNImatrix[i][j] == 'P':
-				s3[i][j] = 1
-			if PNImatrix[i][j] == 'N':
-				s3[i][j] = 0
-
+	#s3 = copy.deepcopy(PNImatrix)
+	s3 = test_get_Sk_matrix(PNImatrix, 1, 0, 1) 
 	print("****S3****")
 	show(s3)
 	candidates = get_max1_str(s3)
@@ -443,14 +462,8 @@ def k3_optimize(PNImatrix):
 #optimization by symmetrical, asymmetric, incomparable parts
 
 def k4_optimize(PNImatrix):
-	s4 = copy.deepcopy(PNImatrix)
-	for i in range(len(PNImatrix)):
-		for j in range(len(PNImatrix)):
-			if PNImatrix[i][j] == 'P':
-				s4[i][j] = 1
-			if PNImatrix[i][j] == 'N' or PNImatrix[i][j] == 'I' :
-				s4[i][j] = 0
-	
+	#s4 = copy.deepcopy(PNImatrix)
+	s4 = test_get_Sk_matrix(PNImatrix, 1, 0, 0)
 	print("****S4****")	
 	show(s4)		
 	candidates = get_max1_str(s4)
